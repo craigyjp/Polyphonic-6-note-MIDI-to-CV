@@ -13,5 +13,6 @@ Poly/Unison/Mono modes
 
 Still to do:-
 
-Menus and encoder and a little jumpy, but functional
+Menus and encoder and a little jumpy
 Transpose function would be useful
+Implement push buttons instead of encoder
