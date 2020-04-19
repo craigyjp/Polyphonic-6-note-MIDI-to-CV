@@ -494,14 +494,14 @@ void updateVoice1() {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE1, 1, 1, velmV <<5 );
+  setVoltage(DAC_NOTE1, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE1, 1, 1, velmV <<5 );  
+  setVoltage(DAC_NOTE1, 1, 1, velmV <<4 );  
   }
 }
 
@@ -510,14 +510,14 @@ void updateVoice2() {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE2, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE2, 1, 1, velmV <<5 );
+  setVoltage(DAC_NOTE2, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) voices[1].note * NOTE_SF * sfAdj + 0.5);  
   setVoltage(DAC_NOTE2, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[1].velocity);
-  setVoltage(DAC_NOTE2, 1, 1, velmV <<5 );  
+  setVoltage(DAC_NOTE2, 1, 1, velmV <<4 );  
   } 
 }
 
@@ -526,14 +526,14 @@ void updateVoice3() {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE3, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE3, 1, 1, velmV <<5 );
+  setVoltage(DAC_NOTE3, 1, 1, velmV <<4 );
   }
   else
   { 
   unsigned int mV = (unsigned int) ((float) voices[2].note * NOTE_SF * sfAdj + 0.5);  
   setVoltage(DAC_NOTE3, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[2].velocity);
-  setVoltage(DAC_NOTE3, 1, 1, velmV <<5 );   
+  setVoltage(DAC_NOTE3, 1, 1, velmV <<4 );   
   } 
 }
 
@@ -542,14 +542,14 @@ void updateVoice4() {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE4, 1, 1, velmV <<5 );
+  setVoltage(DAC_NOTE4, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) voices[3].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[3].velocity);
-  setVoltage(DAC_NOTE4, 1, 1, velmV <<5 );   
+  setVoltage(DAC_NOTE4, 1, 1, velmV <<4 );   
   } 
 }
 
@@ -558,14 +558,14 @@ void updateVoice5() {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE5, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE5, 1, 1, velmV <<5 );
+  setVoltage(DAC_NOTE5, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) voices[4].note * NOTE_SF * sfAdj + 0.5);
   setVoltage(DAC_NOTE5, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[4].velocity);
-  setVoltage(DAC_NOTE5, 1, 1, velmV <<5 );   
+  setVoltage(DAC_NOTE5, 1, 1, velmV <<4 );   
   } 
 }
 
@@ -574,14 +574,14 @@ void updateVoice6() {
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
-  setVoltage(DAC_NOTE6, 1, 1, velmV <<5 );
+  setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) voices[1].note * NOTE_SF * sfAdj + 0.5);
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[5].velocity);
-  setVoltage(DAC_NOTE6, 1, 1, velmV <<5 );  
+  setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );  
   } 
 }
 
