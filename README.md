@@ -13,4 +13,5 @@ Poly/Unison/Mono modes
 
 Still to do:-
 
+Menus and encoder and a little jumpy, but functional
 Transpose function would be useful
