@@ -232,7 +232,7 @@ void setup()
 }
 
 void myPitchBend(byte channel, int bend){
-  if (MIDI.getChannel() == pitchBendChan) {
+  if ((MIDI.getChannel() == pitchBendChan) || (pitchBendChan == 0 )) {
           // Pitch bend output from 0 to 1023 mV.  Left shift d2 by 4 to scale from 0 to 2047.
           // With DAC gain = 1X, this will yield a range from 0 to 1023 mV.  Additional amplification
           // after DAC will rescale to -1 to +1V.
@@ -242,7 +242,7 @@ void myPitchBend(byte channel, int bend){
 }
 
 void myControlChange(byte channel, byte number, byte value){
- if (MIDI.getChannel() == ccChan) {
+ if ((MIDI.getChannel() == ccChan || ccChan == 0)) {
           d2 = MIDI.getData2(); 
           // CC range from 0 to 4095 mV  Left shift d2 by 5 to scale from 0 to 4095, 
           // and choose gain = 2X
