@@ -489,16 +489,7 @@ int getVoiceNo(int note) {
 }
 
 void updateVoice1() {
-  Serial.print("Unison Value ");
-  Serial.println(unison);
-  Serial.print("keyboard Mode ");
-  Serial.println(keyboardMode);
   if (unison == 1) {
-        Serial.println("ON 1");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
@@ -506,11 +497,6 @@ void updateVoice1() {
   }
   else
   {
-        Serial.println("ON 1");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
@@ -520,11 +506,6 @@ void updateVoice1() {
 
 void updateVoice2() {
   if (unison == 1) {
-        Serial.println("ON 2");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE2, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
@@ -532,11 +513,6 @@ void updateVoice2() {
   }
   else
   {
-        Serial.println("ON 2");
-        Serial.print("Note ");
-        Serial.println(voices[1].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[1].velocity);
   unsigned int mV = (unsigned int) ((float) voices[1].note * NOTE_SF * sfAdj + 0.5);  
   setVoltage(DAC_NOTE2, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[1].velocity);
@@ -546,23 +522,13 @@ void updateVoice2() {
 
 void updateVoice3() {
   if (unison == 1) {
-        Serial.println("ON 3");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE3, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE3, 1, 1, velmV <<5 );
   }
   else
-  {
-        Serial.println("ON 3");
-        Serial.print("Note ");
-        Serial.println(voices[2].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[2].velocity);  
+  { 
   unsigned int mV = (unsigned int) ((float) voices[2].note * NOTE_SF * sfAdj + 0.5);  
   setVoltage(DAC_NOTE3, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[2].velocity);
@@ -572,11 +538,6 @@ void updateVoice3() {
 
 void updateVoice4() {
   if (unison == 1) {
-        Serial.println("ON 4");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
@@ -584,11 +545,6 @@ void updateVoice4() {
   }
   else
   {
-        Serial.println("ON 4");
-        Serial.print("Note ");
-        Serial.println(voices[3].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[3].velocity);  
   unsigned int mV = (unsigned int) ((float) voices[3].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[3].velocity);
@@ -598,11 +554,6 @@ void updateVoice4() {
 
 void updateVoice5() {
   if (unison == 1) {
-        Serial.println("ON 5");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE5, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
@@ -610,11 +561,6 @@ void updateVoice5() {
   }
   else
   {
-        Serial.println("ON 5");
-        Serial.print("Note ");
-        Serial.println(voices[4].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[4].velocity);
   unsigned int mV = (unsigned int) ((float) voices[4].note * NOTE_SF * sfAdj + 0.5);
   setVoltage(DAC_NOTE5, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[4].velocity);
@@ -624,11 +570,6 @@ void updateVoice5() {
 
 void updateVoice6() {
   if (unison == 1) {
-        Serial.println("ON 6");
-        Serial.print("Note ");
-        Serial.println(voices[0].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[0].velocity);
   unsigned int mV = (unsigned int) ((float) voices[0].note * NOTE_SF * sfAdj + 0.5); 
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
@@ -636,11 +577,6 @@ void updateVoice6() {
   }
   else
   {
-        Serial.println("ON 6");
-        Serial.print("Note ");
-        Serial.println(voices[5].note);
-        Serial.print("Velocity ");
-        Serial.println(voices[5].velocity);
   unsigned int mV = (unsigned int) ((float) voices[1].note * NOTE_SF * sfAdj + 0.5);
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[5].velocity);
@@ -749,8 +685,6 @@ void updateMenu() {  // Called whenever button is pushed
       case KEYBOARD_MODE_SET_CH:  // Save keyboard mode setting to EEPROM
         menu = SETTINGS;
         EEPROM.write(ADDR_KEYBOARD_MODE, keyboardMode);
-        Serial.print("Keyboard Mode ");
-        Serial.println(keyboardMode);
         if (keyboardMode == 0 ) unison = 0; // Poly mode
         if (keyboardMode == 1 ) unison = 1; // Unison mode
         if (keyboardMode == 2 ) unison = 2; // Mono Mode
@@ -758,17 +692,11 @@ void updateMenu() {  // Called whenever button is pushed
         
       case SCALE_FACTOR_SET_CH:  // Save scale factor setting to EEPROM
         menu = SETTINGS;
-        Serial.print("Scale Factor ");
-        Serial.println(sfAdj,3);
         EEPROM.write(ADDR_SF_ADJUST, sfAdj);
         break;
         
       case MIDI_CHANNEL_SET_CH:  // Save pitch bend setting to EEPROM
         menu = SETTINGS;
-        Serial.print("MIDI Channel ");
-        if (masterChan == 0) Serial.println("Omni ");
-        else { Serial.println(masterChan);
-        }
         EEPROM.write(ADDR_MASTER_CHAN, masterChan);
         break;
         
