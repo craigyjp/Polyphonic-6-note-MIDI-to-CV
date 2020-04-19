@@ -244,9 +244,9 @@ void myPitchBend(byte channel, int bend){
 void myControlChange(byte channel, byte number, byte value){
  if ((MIDI.getChannel() == ccChan || ccChan == 0)) {
           d2 = MIDI.getData2(); 
-          // CC range from 0 to 4095 mV  Left shift d2 by 5 to scale from 0 to 4095, 
+          // CC range from 0 to 2047 mV  Left shift d2 by 5 to scale from 0 to 2047, 
           // and choose gain = 2X
-          setVoltage(CC_DAC, CC_AB, 1, d2<<5);  // DAC7, channel 1, gain = 2X
+          setVoltage(CC_DAC, CC_AB, 1, d2<<4);  // DAC7, channel 1, gain = 2X
         } 
 }
 
