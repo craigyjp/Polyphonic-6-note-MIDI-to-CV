@@ -73,8 +73,9 @@
 #define CC_DAC    DAC7
 #define CC_AB     1
 
-// Scale Factor
-#define NOTE_SF 47.069f 
+// Scale Factor will generate 0.5v/octave 
+// 4 octave keyboard on a 3.3v powered DAC
+#define NOTE_SF 41.91f 
 
 #define OLED_RESET 17
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
