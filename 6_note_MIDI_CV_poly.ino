@@ -27,7 +27,7 @@
 
 // Voices available
 #define  NO_OF_VOICES 6
-#define trigTimeout 50
+#define trigTimeout 30
 
 //Note DACS
 #define DAC_NOTE1      7
@@ -96,7 +96,7 @@ enum Menu {
 } menu;
 
 char gateTrig[] = "TTTTTT";
-unsigned long trigTimer[6] = {0};
+
 
 float sfAdj[6];
 
@@ -107,7 +107,7 @@ int masterTran;
 int transpose = 0;
 int8_t d2, i;
 
-//unsigned long trigTimer[6] = {0};
+float noteTrig[6];
 
 struct VoiceAndNote {
   int note;
@@ -269,7 +269,10 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice1();
         digitalWrite(GATE_NOTE1,HIGH);
         digitalWrite(TRIG_NOTE1,HIGH);
-        delay(20);
+        noteTrig[0] = millis();
+        while(millis() < noteTrig[0] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE1,LOW); // Set trigger low after 20 msec
         voiceOn[0] = true;
         break;
@@ -280,7 +283,10 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice2();
         digitalWrite(GATE_NOTE2,HIGH);
         digitalWrite(TRIG_NOTE2,HIGH);
-        delay(20);
+        noteTrig[1] = millis();
+        while(millis() < noteTrig[1] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE2,LOW);
         voiceOn[1] = true;
         break;
@@ -291,7 +297,10 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice3();
         digitalWrite(GATE_NOTE3,HIGH);
         digitalWrite(TRIG_NOTE3,HIGH);
-        delay(20);
+        noteTrig[2] = millis();
+        while(millis() < noteTrig[2] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE3,LOW);
         voiceOn[2] = true;
         break;
@@ -302,7 +311,10 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice4();
         digitalWrite(GATE_NOTE4,HIGH);
         digitalWrite(TRIG_NOTE4,HIGH);
-        delay(20);
+        noteTrig[3] = millis();
+        while(millis() < noteTrig[3] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE4,LOW);
         voiceOn[3] = true;
         break;
@@ -313,7 +325,10 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice5();
         digitalWrite(GATE_NOTE5,HIGH);
         digitalWrite(TRIG_NOTE5,HIGH);
-        delay(20);
+        noteTrig[4] = millis();
+        while(millis() < noteTrig[4] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE5,LOW);
         voiceOn[4] = true;
         break;
@@ -324,7 +339,10 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice6();
         digitalWrite(GATE_NOTE6,HIGH);
         digitalWrite(TRIG_NOTE6,HIGH);
-        delay(20);
+        noteTrig[5] = millis();
+        while(millis() < noteTrig[5] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE6,LOW);
         voiceOn[5] = true;
         break;
@@ -337,7 +355,9 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice1();
         digitalWrite(GATE_NOTE1,HIGH);
         digitalWrite(TRIG_NOTE1,HIGH);
-        delay(20);
+        while(millis() < noteTrig[0] + trigTimeout) {
+          // wait 50 milliseconds
+        }
         digitalWrite(TRIG_NOTE1,LOW);
         voiceOn[0] = true;
   } else if (keyboardMode == 1)
