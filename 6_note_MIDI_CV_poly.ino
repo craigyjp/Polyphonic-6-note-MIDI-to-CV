@@ -233,6 +233,10 @@ if (keyboardMode > 2) keyboardMode = 0;
 if (masterTran > 25) masterTran = 13;
 if (masterChan >15) masterChan = 0;
 if (octave >3) octave = 3;
+        if (octave == 0) realoctave = -36;
+        if (octave == 1) realoctave = -24;
+        if (octave == 2) realoctave = -12;
+        if (octave == 3) realoctave = 0;
 if (pitchBendChan > 15) pitchBendChan = 0;
 if (ccChan > 15) ccChan = 0;
 
