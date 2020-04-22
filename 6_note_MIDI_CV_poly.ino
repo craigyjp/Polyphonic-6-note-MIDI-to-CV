@@ -238,11 +238,8 @@ if (ccChan > 15) ccChan = 0;
 
 void myPitchBend(byte channel, int bend){
   if ((MIDI.getChannel() == pitchBendChan) || (pitchBendChan == 0 )) {
-          // Pitch bend output from 0 to 1023 mV.  Left shift d2 by 4 to scale from 0 to 2047.
-          // With DAC gain = 1X, this will yield a range from 0 to 1023 mV.  Additional amplification
-          // after DAC will rescale to -1 to +1V.
           d2 = MIDI.getData2(); // d2 from 0 to 127, mid point = 64
-          setVoltage(PITCH_DAC, PITCH_AB, 0, d2<<4);  // DAC7, channel 0, gain = 1X
+          setVoltage(PITCH_DAC, PITCH_AB, 0, d2<<5);  // DAC7, channel 0, gain = 1X
         }
 }
 
@@ -603,7 +600,7 @@ void updateVoice6() {
   }
   else
   {
-  unsigned int mV = (unsigned int) ((float) (voices[1].note + transpose) * NOTE_SF * sfAdj[5] + 0.5);
+  unsigned int mV = (unsigned int) ((float) (voices[5].note + transpose) * NOTE_SF * sfAdj[5] + 0.5);
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[5].velocity);
   setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );  
