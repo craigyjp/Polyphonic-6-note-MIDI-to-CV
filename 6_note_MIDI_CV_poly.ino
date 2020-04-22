@@ -91,6 +91,7 @@ enum Menu {
   KEYBOARD_MODE_SET_CH,
   MIDI_CHANNEL_SET_CH,
   TRANSPOSE_SET_CH,
+  OCTAVE_SET_CH,
   SCALE_FACTOR,
   SCALE_FACTOR_SET_CH
 } menu;
@@ -129,6 +130,8 @@ int voiceToReturn = -1;//Initialise to 'null'
 long earliestTime = millis();//For voice allocation - initialise to now
 int  prevNote = 0;//Initialised to middle value
 int keyboardMode = 0;
+int octave = 0;
+int realoctave = 0;
 
 // MIDI setup
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -143,6 +146,8 @@ const int channel = 1;
 #define ADDR_MASTER_CHAN   20
 #define ADDR_TRANSPOSE     26
 #define ADDR_REAL_TRANSPOSE 27
+#define ADDR_OCTAVE 28
+#define ADDR_REALOCTAVE 29
 
 bool highlightEnabled = false;  // Flag indicating whether highighting should be enabled on menu
 #define HIGHLIGHT_TIMEOUT 20000  // Highlight disappears after 20 seconds.  Timer resets whenever encoder turned or button pushed
@@ -218,6 +223,8 @@ void setup()
  masterChan = (int)EEPROM.read(ADDR_MASTER_CHAN);
  masterTran = (int)EEPROM.read(ADDR_TRANSPOSE);
  transpose = (int)EEPROM.read(ADDR_REAL_TRANSPOSE);
+ octave = (int)EEPROM.read(ADDR_OCTAVE);
+ realoctave = (int)EEPROM.read(ADDR_REALOCTAVE);
  pitchBendChan = EEPROM.read(ADDR_MASTER_CHAN);
  ccChan = EEPROM.read(ADDR_MASTER_CHAN);
  
@@ -225,6 +232,7 @@ void setup()
 if (keyboardMode > 2) keyboardMode = 0;
 if (masterTran > 25) masterTran = 13;
 if (masterChan >15) masterChan = 0;
+if (octave >3) octave = 3;
 if (pitchBendChan > 15) pitchBendChan = 0;
 if (ccChan > 15) ccChan = 0;
 
@@ -238,6 +246,9 @@ if (ccChan > 15) ccChan = 0;
 
 void myPitchBend(byte channel, int bend){
   if ((MIDI.getChannel() == pitchBendChan) || (pitchBendChan == 0 )) {
+          // Pitch bend output from 0 to 1023 mV.  Left shift d2 by 4 to scale from 0 to 2047.
+          // With DAC gain = 1X, this will yield a range from 0 to 1023 mV.  Additional amplification
+          // after DAC will rescale to -1 to +1V.
           d2 = MIDI.getData2(); // d2 from 0 to 127, mid point = 64
           setVoltage(PITCH_DAC, PITCH_AB, 0, d2<<5);  // DAC7, channel 0, gain = 1X
         }
@@ -513,14 +524,14 @@ int getVoiceNo(int note) {
 
 void updateVoice1() {
   if (keyboardMode == 1) {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[0] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave) * NOTE_SF * sfAdj[0] + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE1, 1, 1, velmV <<4 );
   }
   else
   {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[0] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[0] + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE1, 1, 1, velmV <<4 );  
@@ -529,14 +540,14 @@ void updateVoice1() {
 
 void updateVoice2() {
   if (keyboardMode == 1) {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[1] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[1] + 0.5); 
   setVoltage(DAC_NOTE2, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE2, 1, 1, velmV <<4 );
   }
   else
   {
-  unsigned int mV = (unsigned int) ((float) (voices[1].note + transpose) * NOTE_SF * sfAdj[1] + 0.5);  
+  unsigned int mV = (unsigned int) ((float) (voices[1].note + transpose + realoctave)* NOTE_SF * sfAdj[1] + 0.5);  
   setVoltage(DAC_NOTE2, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[1].velocity);
   setVoltage(DAC_NOTE2, 1, 1, velmV <<4 );  
@@ -545,14 +556,14 @@ void updateVoice2() {
 
 void updateVoice3() {
   if (keyboardMode == 1) {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[2] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[2] + 0.5); 
   setVoltage(DAC_NOTE3, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE3, 1, 1, velmV <<4 );
   }
   else
   { 
-  unsigned int mV = (unsigned int) ((float) (voices[2].note + transpose) * NOTE_SF * sfAdj[2] + 0.5);  
+  unsigned int mV = (unsigned int) ((float) (voices[2].note + transpose + realoctave)* NOTE_SF * sfAdj[2] + 0.5);  
   setVoltage(DAC_NOTE3, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[2].velocity);
   setVoltage(DAC_NOTE3, 1, 1, velmV <<4 );   
@@ -561,14 +572,14 @@ void updateVoice3() {
 
 void updateVoice4() {
   if (keyboardMode == 1) {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[3] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[3] + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE4, 1, 1, velmV <<4 );
   }
   else
   {  
-  unsigned int mV = (unsigned int) ((float) (voices[3].note + transpose) * NOTE_SF * sfAdj[3] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[3].note + transpose + realoctave)* NOTE_SF * sfAdj[3] + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[3].velocity);
   setVoltage(DAC_NOTE4, 1, 1, velmV <<4 );   
@@ -577,14 +588,14 @@ void updateVoice4() {
 
 void updateVoice5() {
   if (keyboardMode == 1) {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[4] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[4] + 0.5); 
   setVoltage(DAC_NOTE5, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE5, 1, 1, velmV <<4 );
   }
   else
   {
-  unsigned int mV = (unsigned int) ((float) (voices[4].note + transpose) * NOTE_SF * sfAdj[4] + 0.5);
+  unsigned int mV = (unsigned int) ((float) (voices[4].note + transpose + realoctave)* NOTE_SF * sfAdj[4] + 0.5);
   setVoltage(DAC_NOTE5, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[4].velocity);
   setVoltage(DAC_NOTE5, 1, 1, velmV <<4 );   
@@ -593,14 +604,14 @@ void updateVoice5() {
 
 void updateVoice6() {
   if (keyboardMode == 1) {
-  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose) * NOTE_SF * sfAdj[5] + 0.5); 
+  unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[5] + 0.5); 
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
   setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );
   }
   else
   {
-  unsigned int mV = (unsigned int) ((float) (voices[5].note + transpose) * NOTE_SF * sfAdj[5] + 0.5);
+  unsigned int mV = (unsigned int) ((float) (voices[5].note + transpose + realoctave)* NOTE_SF * sfAdj[5] + 0.5);
   setVoltage(DAC_NOTE6, 0, 1, mV);
   unsigned int velmV = (unsigned int) ((float) voices[5].velocity);
   setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );  
@@ -617,6 +628,7 @@ void loop()
 //int8_t i;
 
   updateEncoderPos();  
+  updateEncoderPosB();
   encButton.update();
 
  if (encButton.fell()) {  
@@ -659,7 +671,6 @@ void updateEncoderPos() {
     static int encoderA, encoderB, encoderA_prev;   
 
     encoderA = digitalRead(ENC_A); 
-    encoderB = digitalRead(ENC_B);
       
     if((!encoderA) && (encoderA_prev)){ // A has gone from high to low 
       if (highlightEnabled) { // Update encoder position
@@ -677,6 +688,27 @@ void updateEncoderPos() {
     encoderA_prev = encoderA;     
 }
 
+void updateEncoderPosB() {
+    static int encoderA, encoderB, encoderB_prev;   
+
+    encoderB = digitalRead(ENC_B);
+      
+    if((!encoderB) && (encoderB_prev)){ // A has gone from high to low 
+      if (highlightEnabled) { // Update encoder position
+        encoderPosPrev = encoderPos;
+        encoderA ? encoderPos-- : encoderPos++;  
+      }
+      else { 
+        highlightEnabled = true;
+        encoderPos = 0;  // Reset encoder position if highlight timed out
+        encoderPosPrev = 0;
+      }
+      highlightTimer = millis(); 
+      updateSelection();
+    }
+    encoderB_prev = encoderB;     
+}
+
 int setCh;
 char setMode[6];
 
@@ -685,7 +717,7 @@ void updateMenu() {  // Called whenever button is pushed
   if (highlightEnabled) { // Highlight is active, choose selection
     switch (menu) {
       case SETTINGS:
-        switch (mod(encoderPos,4)) {
+        switch (mod(encoderPos,5)) {
           case 0: 
             menu = KEYBOARD_MODE_SET_CH;
             break;
@@ -695,27 +727,40 @@ void updateMenu() {  // Called whenever button is pushed
           case 2: 
             menu = TRANSPOSE_SET_CH;
             break;
-          case 3: 
+          case 3:
+            menu = OCTAVE_SET_CH;
+            break;
+          case 4: 
             menu = SCALE_FACTOR;
             break;
         }
         break;
         
-      case KEYBOARD_MODE_SET_CH:  // Save note priority setting to EEPROM
+      case KEYBOARD_MODE_SET_CH:  // Save keyboard mode setting to EEPROM
         menu = SETTINGS;
         EEPROM.write(ADDR_KEYBOARD_MODE, keyboardMode);
         break;
   
-      case MIDI_CHANNEL_SET_CH:  // Save pitch bend setting to EEPROM
+      case MIDI_CHANNEL_SET_CH:  // Save midi channel setting to EEPROM
         menu = SETTINGS;
         EEPROM.write(ADDR_MASTER_CHAN, masterChan);
         break;
         
-      case TRANSPOSE_SET_CH:  // Save pitch bend setting to EEPROM
+      case TRANSPOSE_SET_CH:  // Save transpose setting to EEPROM
         menu = SETTINGS;
         EEPROM.write(ADDR_TRANSPOSE, masterTran);
         EEPROM.write(ADDR_REAL_TRANSPOSE, masterTran -12);
         transpose = (masterTran -12);
+        break;
+
+        case OCTAVE_SET_CH:  // Save octave adjust setting to EEPROM
+        menu = SETTINGS;
+        EEPROM.write(ADDR_OCTAVE, octave);
+        if (octave == 0) realoctave = -36;
+        if (octave == 1) realoctave = -24;
+        if (octave == 2) realoctave = -12;
+        if (octave == 3) realoctave = 0;
+        EEPROM.write(ADDR_REALOCTAVE, realoctave);
         break;
 
       case SCALE_FACTOR:
@@ -754,13 +799,16 @@ void updateSelection() { // Called whenever encoder is turned
   display.clearDisplay();
   switch (menu) {
     case KEYBOARD_MODE_SET_CH:
-      keyboardMode = mod(encoderPos, 3);
+      if (menu == KEYBOARD_MODE_SET_CH) keyboardMode = mod(encoderPos, 3);
       
     case MIDI_CHANNEL_SET_CH:
       if (menu == MIDI_CHANNEL_SET_CH) masterChan = mod(encoderPos, 17);
       
     case TRANSPOSE_SET_CH:
       if (menu == TRANSPOSE_SET_CH) masterTran = mod(encoderPos, 25);
+
+    case OCTAVE_SET_CH:
+      if (menu == OCTAVE_SET_CH) octave = mod(encoderPos, 4);
       
     case SETTINGS:
       display.setCursor(0,0); 
@@ -770,25 +818,39 @@ void updateSelection() { // Called whenever encoder is turned
       
       if (menu == SETTINGS) setHighlight(0,5);
       display.print(F("Keyboard Mode "));
-      if (keyboardMode == 0) display.println("Poly  ");
-      if (keyboardMode == 1) display.println("Unison");
-      if (keyboardMode == 2) display.println("Mono  ");
-      
+      if (menu == KEYBOARD_MODE_SET_CH) display.setTextColor(BLACK,WHITE);
+      if (keyboardMode == 0) display.print("Poly  ");
+      if (keyboardMode == 1) display.print("Unison");
+      if (keyboardMode == 2) display.print("Mono  ");
+      display.println(F(""));
+      display.setTextColor(WHITE,BLACK);
+            
       if (menu == SETTINGS) setHighlight(1,5);
       display.print(F("Midi Channel  "));
       if (menu == MIDI_CHANNEL_SET_CH) display.setTextColor(BLACK,WHITE);
       if (masterChan == 0) display.print("Omni");
       else display.print(masterChan);     
-      display.println(F("  "));
+      display.println(F(" "));
+      display.setTextColor(WHITE,BLACK);
       
       if (menu == SETTINGS) setHighlight(2,5);
-      else display.setTextColor(WHITE,BLACK);
-      display.print(F("Transpose     "));
+      display.print(F("Transpose     "));     
       if (menu == TRANSPOSE_SET_CH) display.setTextColor(BLACK,WHITE);
       display.print(masterTran -12);
-      display.println(F("  "));
+      display.println(F(" "));
+      display.setTextColor(WHITE,BLACK);
 
       if (menu == SETTINGS) setHighlight(3,5);
+      display.print(F("Octave Adjust "));
+      if (menu == OCTAVE_SET_CH) display.setTextColor(BLACK,WHITE);
+      if (octave == 0) display.print("-3 ");
+      if (octave == 1) display.print("-2 ");
+      if (octave == 2) display.print("-1 ");
+      if (octave == 3) display.print(" 0 ");
+      display.println(F(" "));
+      display.setTextColor(WHITE,BLACK);
+
+      if (menu == SETTINGS) setHighlight(4,5);
       else display.setTextColor(WHITE,BLACK);
       display.println(F("Scale Factor     "));
       break;
