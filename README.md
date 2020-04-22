@@ -17,10 +17,10 @@ MIDI Channel selection or Omni
 
 Poly/Unison/Mono modes
 
-Transpose Mode across 2 octaves
+Transpose Mode +/- one Octave
 
-Still to do:-
+Octave shift 0 to -3 Octaves to give 0V on bottom C
 
-Menus and encoder improved, but could be better
+Scaling on individual notes to improve tuning
 
-Implement push buttons instead of encoder
+Up/Down/Select buttons for menu
