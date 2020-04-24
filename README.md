@@ -1,7 +1,7 @@
 # Polyhonic-6-note-MIDI-to-CV
 I needed a 6 note poly controller for a new hardware synth I was building and this is it.
 
-It works, but as I'm using a teensy 3.5 and the orginal was based on a 5v Teensy 2.0 some work is required to set the scaling to 1v/Octave. Also the Pitchbend, CC, gates and triggers will all need some level conversion in hardware which I'm not going into in the thread, but they are currently 3.3v max so will need converting to +5 or +10v depending on preferences. The CV out voltages have been scaled to 0.5v/octave before the opamp buffers to allow a 2X opamp conversion and giving 1v/Oct.
+It works, but as I'm using a teensy 3.5 and the orginal was based on a 5v Teensy 2.0 so the DAC output is 3.3v max. Also the Pitchbend, CC, gates and triggers will all need some level conversion in hardware which I've covered in the schematic PDF. I've used matching 10k resistors on the DAC level converters to give 2x conversion and this gives 1v/octave, the triggers and gates are currently +5v.
 
 6 note polyphonic
 
