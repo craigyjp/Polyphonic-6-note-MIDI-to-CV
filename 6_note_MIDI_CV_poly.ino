@@ -109,6 +109,8 @@ int transpose = 0;
 int8_t d2, i;
 
 float noteTrig[6];
+float monoTrig;
+float unisonTrig;
 
 struct VoiceAndNote {
   int note;
@@ -367,7 +369,8 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         updateVoice1();
         digitalWrite(GATE_NOTE1,HIGH);
         digitalWrite(TRIG_NOTE1,HIGH);
-        while(millis() < noteTrig[0] + trigTimeout) {
+        monoTrig = millis();
+        while(millis() < monoTrig + trigTimeout) {
           // wait 50 milliseconds
         }
         digitalWrite(TRIG_NOTE1,LOW);
@@ -401,11 +404,27 @@ void myNoteOn(byte channel, byte note, byte velocity) {
     updateVoice6();
 
  digitalWrite(GATE_NOTE1,HIGH);
+ digitalWrite(TRIG_NOTE1,HIGH);
  digitalWrite(GATE_NOTE2,HIGH);
+ digitalWrite(TRIG_NOTE2,HIGH);
  digitalWrite(GATE_NOTE3,HIGH);
+ digitalWrite(TRIG_NOTE3,HIGH);
  digitalWrite(GATE_NOTE4,HIGH);
+ digitalWrite(TRIG_NOTE4,HIGH);
  digitalWrite(GATE_NOTE5,HIGH);
+ digitalWrite(TRIG_NOTE5,HIGH);
  digitalWrite(GATE_NOTE6,HIGH);
+ digitalWrite(TRIG_NOTE6,HIGH);
+       unisonTrig = millis();
+        while(millis() < unisonTrig + trigTimeout) {
+          // wait 50 milliseconds
+        }
+ digitalWrite(TRIG_NOTE1,LOW);
+ digitalWrite(TRIG_NOTE2,LOW);
+ digitalWrite(TRIG_NOTE3,LOW);
+ digitalWrite(TRIG_NOTE4,LOW);
+ digitalWrite(TRIG_NOTE5,LOW);
+ digitalWrite(TRIG_NOTE6,LOW); 
 
     voiceOn[0] = true;
     voiceOn[1] = true;
@@ -530,14 +549,14 @@ void updateVoice1() {
   if (keyboardMode == 1) {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave) * NOTE_SF * sfAdj[0] + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE1, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[0] + 0.5); 
   setVoltage(DAC_NOTE1, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE1, 1, 1, velmV <<4 );  
   }
 }
@@ -546,14 +565,14 @@ void updateVoice2() {
   if (keyboardMode == 1) {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[1] + 0.5); 
   setVoltage(DAC_NOTE2, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE2, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) (voices[1].note + transpose + realoctave)* NOTE_SF * sfAdj[1] + 0.5);  
   setVoltage(DAC_NOTE2, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[1].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[1].velocity) * 1.25);
   setVoltage(DAC_NOTE2, 1, 1, velmV <<4 );  
   } 
 }
@@ -562,14 +581,14 @@ void updateVoice3() {
   if (keyboardMode == 1) {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[2] + 0.5); 
   setVoltage(DAC_NOTE3, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE3, 1, 1, velmV <<4 );
   }
   else
   { 
   unsigned int mV = (unsigned int) ((float) (voices[2].note + transpose + realoctave)* NOTE_SF * sfAdj[2] + 0.5);  
   setVoltage(DAC_NOTE3, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[2].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[2].velocity) * 1.25);
   setVoltage(DAC_NOTE3, 1, 1, velmV <<4 );   
   } 
 }
@@ -578,14 +597,14 @@ void updateVoice4() {
   if (keyboardMode == 1) {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[3] + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE4, 1, 1, velmV <<4 );
   }
   else
   {  
   unsigned int mV = (unsigned int) ((float) (voices[3].note + transpose + realoctave)* NOTE_SF * sfAdj[3] + 0.5); 
   setVoltage(DAC_NOTE4, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[3].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[3].velocity) * 1.25);
   setVoltage(DAC_NOTE4, 1, 1, velmV <<4 );   
   } 
 }
@@ -594,14 +613,14 @@ void updateVoice5() {
   if (keyboardMode == 1) {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[4] + 0.5); 
   setVoltage(DAC_NOTE5, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE5, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) (voices[4].note + transpose + realoctave)* NOTE_SF * sfAdj[4] + 0.5);
   setVoltage(DAC_NOTE5, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[4].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[4].velocity) * 1.25);
   setVoltage(DAC_NOTE5, 1, 1, velmV <<4 );   
   } 
 }
@@ -610,14 +629,14 @@ void updateVoice6() {
   if (keyboardMode == 1) {
   unsigned int mV = (unsigned int) ((float) (voices[0].note + transpose + realoctave)* NOTE_SF * sfAdj[5] + 0.5); 
   setVoltage(DAC_NOTE6, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[0].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[0].velocity) * 1.25);
   setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );
   }
   else
   {
   unsigned int mV = (unsigned int) ((float) (voices[5].note + transpose + realoctave)* NOTE_SF * sfAdj[5] + 0.5);
   setVoltage(DAC_NOTE6, 0, 1, mV);
-  unsigned int velmV = (unsigned int) ((float) voices[5].velocity);
+  unsigned int velmV = ((unsigned int) ((float) voices[5].velocity) * 1.25);
   setVoltage(DAC_NOTE6, 1, 1, velmV <<4 );  
   } 
 }
