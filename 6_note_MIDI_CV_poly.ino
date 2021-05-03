@@ -42,12 +42,12 @@
 #define DAC7      26
 
 //Trig outputs
-#define TRIG_NOTE1  27
-#define TRIG_NOTE2  28
-#define TRIG_NOTE3  29
-#define TRIG_NOTE4  30
-#define TRIG_NOTE5  31
-#define TRIG_NOTE6  32
+#define TRIG_NOTE1  32
+#define TRIG_NOTE2  31
+#define TRIG_NOTE3  30
+#define TRIG_NOTE4  29
+#define TRIG_NOTE5  28
+#define TRIG_NOTE6  27
 
 //Gate outputs
 #define GATE_NOTE1  33
@@ -75,6 +75,8 @@
 #define CC_DAC    DAC7
 #define CC_AB     1
 
+#define UNISON_ON 2
+
 // Scale Factor will generate 0.5v/octave
 // 4 octave keyboard on a 3.3v powered DAC
 #define NOTE_SF 41.91f
@@ -86,6 +88,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 int encoderPos, encoderPosPrev;
 Bounce encButton = Bounce();
+Bounce encoderA = Bounce();
+Bounce encoderB = Bounce();
 
 enum Menu {
   SETTINGS,
@@ -106,6 +110,7 @@ uint8_t pitchBendChan;
 uint8_t ccChan;
 int masterChan;
 int masterTran;
+int previousMode;
 int transpose = 0;
 int8_t d2, i;
 
@@ -187,6 +192,7 @@ void setup()
   pinMode(ENC_A, INPUT_PULLUP);
   pinMode(ENC_B, INPUT_PULLUP);
   pinMode(ENC_BTN, INPUT_PULLUP);
+  pinMode(UNISON_ON, INPUT);
 
   digitalWrite(GATE_NOTE1, LOW);
   digitalWrite(GATE_NOTE2, LOW);
@@ -211,7 +217,7 @@ void setup()
   SPI.begin();
 
   //USB HOST MIDI Class Compliant
-  delay(200); //Wait to turn on USB Host
+  delay(300); //Wait to turn on USB Host
   myusb.begin();
   midi1.setHandleControlChange(myControlChange);
   midi1.setHandleNoteOff(myNoteOff);
@@ -254,8 +260,8 @@ void setup()
   transpose = (int)EEPROM.read(ADDR_REAL_TRANSPOSE);
   octave = (int)EEPROM.read(ADDR_OCTAVE);
   realoctave = (int)EEPROM.read(ADDR_REALOCTAVE);
-  pitchBendChan = EEPROM.read(ADDR_MASTER_CHAN);
-  ccChan = EEPROM.read(ADDR_MASTER_CHAN);
+  pitchBendChan = masterChan;
+  ccChan = masterChan;
 
   // Set defaults if EEPROM not initialized
   if (keyboardMode > 2) keyboardMode = 0;
@@ -266,12 +272,15 @@ void setup()
   if (octave == 1) realoctave = -24;
   if (octave == 2) realoctave = -12;
   if (octave == 3) realoctave = 0;
-  if (pitchBendChan > 15) pitchBendChan = 0;
-  if (ccChan > 15) ccChan = 0;
+  if (pitchBendChan > 15) pitchBendChan = masterChan;
+  if (ccChan > 15) ccChan = masterChan;
 
 
   encButton.attach(ENC_BTN);
   encButton.interval(5);  // interval in ms
+
+  setVoltage(PITCH_DAC, PITCH_AB, 1, 1024); // DAC7, channel 0, gain = 1X
+  setVoltage(CC_DAC, CC_AB, 1, 0); // DAC7, channel 1, gain = 1X
 
   menu = SETTINGS;
   updateSelection();
@@ -283,7 +292,9 @@ void myPitchBend(byte channel, int bend) {
     // With DAC gain = 1X, this will yield a range from 0 to 1023 mV.  Additional amplification
     // after DAC will rescale to -1 to +1V.
     d2 = MIDI.getData2(); // d2 from 0 to 127, mid point = 64
-    setVoltage(PITCH_DAC, PITCH_AB, 0, d2 << 5); // DAC7, channel 0, gain = 1X
+//    Serial.print("MIDI Pitch Bend ");
+//    Serial.println(bend);
+    setVoltage(PITCH_DAC, PITCH_AB, 1, int((bend / 8) + 1024)); // DAC7, channel 0, gain = 1X
   }
 }
 
@@ -292,7 +303,9 @@ void myControlChange(byte channel, byte number, byte value) {
     d2 = MIDI.getData2();
     // CC range from 0 to 2047 mV  Left shift d2 by 5 to scale from 0 to 2047,
     // and choose gain = 2X
-    setVoltage(CC_DAC, CC_AB, 1, d2 << 4); // DAC7, channel 1, gain = 1X
+//    Serial.print("Mod Wheel ");
+//    Serial.println(value);
+    setVoltage(CC_DAC, CC_AB, 1, value << 4); // DAC7, channel 1, gain = 1X
   }
 }
 
@@ -308,6 +321,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         voices[0].velocity = velocity;
         voices[0].timeOn = millis();
         updateVoice1();
+
         digitalWrite(GATE_NOTE1, HIGH);
         digitalWrite(TRIG_NOTE1, HIGH);
         noteTrig[0] = millis();
@@ -322,6 +336,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         voices[1].velocity = velocity;
         voices[1].timeOn = millis();
         updateVoice2();
+
         digitalWrite(GATE_NOTE2, HIGH);
         digitalWrite(TRIG_NOTE2, HIGH);
         noteTrig[1] = millis();
@@ -336,6 +351,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         voices[2].velocity = velocity;
         voices[2].timeOn = millis();
         updateVoice3();
+
         digitalWrite(GATE_NOTE3, HIGH);
         digitalWrite(TRIG_NOTE3, HIGH);
         noteTrig[2] = millis();
@@ -350,6 +366,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         voices[3].velocity = velocity;
         voices[3].timeOn = millis();
         updateVoice4();
+
         digitalWrite(GATE_NOTE4, HIGH);
         digitalWrite(TRIG_NOTE4, HIGH);
         noteTrig[3] = millis();
@@ -364,6 +381,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         voices[4].velocity = velocity;
         voices[4].timeOn = millis();
         updateVoice5();
+
         digitalWrite(GATE_NOTE5, HIGH);
         digitalWrite(TRIG_NOTE5, HIGH);
         noteTrig[4] = millis();
@@ -378,6 +396,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
         voices[5].velocity = velocity;
         voices[5].timeOn = millis();
         updateVoice6();
+
         digitalWrite(GATE_NOTE6, HIGH);
         digitalWrite(TRIG_NOTE6, HIGH);
         noteTrig[5] = millis();
@@ -394,6 +413,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
     voices[0].velocity = velocity;
     voices[0].timeOn = millis();
     updateVoice1();
+
     digitalWrite(GATE_NOTE1, HIGH);
     digitalWrite(TRIG_NOTE1, HIGH);
     monoTrig = millis();
@@ -429,7 +449,6 @@ void myNoteOn(byte channel, byte note, byte velocity) {
     voices[5].velocity = velocity;
     voices[5].timeOn = millis();
     updateVoice6();
-
     digitalWrite(GATE_NOTE1, HIGH);
     digitalWrite(TRIG_NOTE1, HIGH);
     digitalWrite(GATE_NOTE2, HIGH);
@@ -442,6 +461,7 @@ void myNoteOn(byte channel, byte note, byte velocity) {
     digitalWrite(TRIG_NOTE5, HIGH);
     digitalWrite(GATE_NOTE6, HIGH);
     digitalWrite(TRIG_NOTE6, HIGH);
+
     unisonTrig = millis();
     while (millis() < unisonTrig + trigTimeout) {
       // wait 50 milliseconds
@@ -671,6 +691,29 @@ void updateVoice6() {
 bool notes[6][88] = {0}, initial_loop = 1;
 int8_t noteOrder[6][10] = {0}, orderIndx[6] = {0};
 
+void updateUnisonCheck()
+{
+  if (digitalRead(UNISON_ON) == 1 && keyboardMode == 0)
+  {
+    allNotesOff();
+    previousMode = 0;
+    keyboardMode = 1;
+  }
+  
+  if (digitalRead(UNISON_ON) == 1 && keyboardMode == 2)
+  {
+    allNotesOff();
+    previousMode = 2;
+    keyboardMode = 1;
+  }
+  
+  if (digitalRead(UNISON_ON) == 0)
+  {
+    allNotesOff();
+    keyboardMode = previousMode;
+  }
+}
+
 void loop()
 {
   //  int8_t noteMsg, velocity, channel, i;
@@ -680,6 +723,7 @@ void loop()
   updateEncoderPos();
   updateEncoderPosB();
   encButton.update();
+  updateUnisonCheck();
 
   if (encButton.fell()) {
     if (initial_loop == 1) {
