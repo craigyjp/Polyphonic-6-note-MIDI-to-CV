@@ -255,6 +255,7 @@ void setup()
   }
 
   keyboardMode = (int)EEPROM.read(ADDR_KEYBOARD_MODE);
+  previousMode = (int)EEPROM.read(ADDR_KEYBOARD_MODE);
   masterChan = (int)EEPROM.read(ADDR_MASTER_CHAN);
   masterTran = (int)EEPROM.read(ADDR_TRANSPOSE);
   transpose = (int)EEPROM.read(ADDR_REAL_TRANSPOSE);
@@ -693,21 +694,19 @@ int8_t noteOrder[6][10] = {0}, orderIndx[6] = {0};
 
 void updateUnisonCheck()
 {
-  if (digitalRead(UNISON_ON) == 1 && keyboardMode == 0)
+  if (digitalRead(UNISON_ON) == 1 && keyboardMode == 0) //poly
   {
     allNotesOff();
-    previousMode = 0;
     keyboardMode = 1;
   }
   
-  if (digitalRead(UNISON_ON) == 1 && keyboardMode == 2)
+  if (digitalRead(UNISON_ON) == 1 && keyboardMode == 2) // mono
   {
     allNotesOff();
-    previousMode = 2;
     keyboardMode = 1;
   }
   
-  if (digitalRead(UNISON_ON) == 0)
+  if (digitalRead(UNISON_ON) == 0 && keyboardMode == 1 ) //poly
   {
     allNotesOff();
     keyboardMode = previousMode;
@@ -723,7 +722,7 @@ void loop()
   updateEncoderPos();
   updateEncoderPosB();
   encButton.update();
-  updateUnisonCheck();
+//  updateUnisonCheck();
 
   if (encButton.fell()) {
     if (initial_loop == 1) {
@@ -982,6 +981,7 @@ void updateSelection() { // Called whenever encoder is turned
       display.println(sfAdj[2], 3);
 
       if (menu == SCALE_FACTOR) setHighlight(3, 7);
+      else display.setTextColor(WHITE, BLACK);
       display.print(F("Note 4:    "));
       if ((menu == SCALE_FACTOR_SET_CH) && setCh == 3) display.setTextColor(BLACK, WHITE);
       display.println(sfAdj[3], 3);
